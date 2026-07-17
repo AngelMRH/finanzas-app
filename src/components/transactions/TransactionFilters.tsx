@@ -7,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
 import { Category } from '@/lib/types'
 
 interface TransactionFiltersProps {
@@ -45,61 +44,46 @@ export function TransactionFilters({
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      {/* base-ui Select: onValueChange recibe (value, eventDetails) */}
-      <Select
-        value={selectedMonth}
-        onValueChange={(val) => onMonthChange(val as string)}
-      >
-        <SelectTrigger className="w-48 bg-slate-800 border-slate-700 text-white">
+      <Select value={selectedMonth} onValueChange={val => onMonthChange(val as string)}>
+        <SelectTrigger className="w-44">
           <SelectValue placeholder="Filtrar por mes" />
         </SelectTrigger>
-        <SelectContent className="bg-slate-800 border-slate-700">
-          <SelectItem value="all" className="text-white">
-            Todos los meses
-          </SelectItem>
+        <SelectContent>
+          <SelectItem value="all">Todos los meses</SelectItem>
           {monthOptions.map(opt => (
-            <SelectItem key={opt.value} value={opt.value} className="text-white">
-              {opt.label}
-            </SelectItem>
+            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
           ))}
         </SelectContent>
       </Select>
 
-      <Select
-        value={selectedCategory}
-        onValueChange={(val) => onCategoryChange(val as string)}
-      >
-        <SelectTrigger className="w-48 bg-slate-800 border-slate-700 text-white">
+      <Select value={selectedCategory} onValueChange={val => onCategoryChange(val as string)}>
+        <SelectTrigger className="w-44">
           <SelectValue placeholder="Categoría" />
         </SelectTrigger>
-        <SelectContent className="bg-slate-800 border-slate-700">
-          <SelectItem value="all" className="text-white">
-            Todas las categorías
-          </SelectItem>
+        <SelectContent>
+          <SelectItem value="all">Todas las categorías</SelectItem>
           {categories.map(c => (
-            <SelectItem key={c.id} value={c.id} className="text-white">
-              {c.name}
-            </SelectItem>
+            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
           ))}
         </SelectContent>
       </Select>
 
-      <Button
-        variant="outline"
+      <button
         onClick={onExportCSV}
         disabled={transactionCount === 0}
-        className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+        className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium border transition-all hover:bg-[rgba(var(--glass-border))] disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{borderColor:'rgba(var(--glass-border))',color:'rgb(var(--text-2))'}}
       >
-        <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-          />
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
         </svg>
-        Exportar CSV ({transactionCount})
-      </Button>
+        <span>CSV</span>
+        {transactionCount > 0 && (
+          <span className="text-xs px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-semibold">
+            {transactionCount}
+          </span>
+        )}
+      </button>
     </div>
   )
 }

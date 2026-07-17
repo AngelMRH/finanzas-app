@@ -2,21 +2,8 @@
 
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { useState } from 'react'
 import { Transaction } from '@/lib/types'
 
@@ -26,8 +13,8 @@ interface TransactionsTableProps {
   onDelete: (id: string) => void
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount)
+function fmt(n: number) {
+  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(n)
 }
 
 export function TransactionsTable({ transactions, onEdit, onDelete }: TransactionsTableProps) {
@@ -38,182 +25,162 @@ export function TransactionsTable({ transactions, onEdit, onDelete }: Transactio
     if (!deleteId) return
     setDeleting(true)
     const res = await fetch(`/api/transactions/${deleteId}`, { method: 'DELETE' })
-    if (res.ok) {
-      onDelete(deleteId)
-    }
+    if (res.ok) onDelete(deleteId)
     setDeleting(false)
     setDeleteId(null)
   }
 
   if (transactions.length === 0) {
     return (
-      <div className="text-center py-12 text-slate-400">
-        <svg
-          className="w-12 h-12 mx-auto mb-3 opacity-40"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1}
-            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-          />
-        </svg>
-        <p>Sin transacciones. ¡Agrega la primera!</p>
+      <div className="glass rounded-2xl flex flex-col items-center justify-center py-16 px-6 text-center">
+        <div className="w-16 h-16 rounded-2xl mb-4 flex items-center justify-center" style={{background:'rgba(var(--glass-bg))'}}>
+          <svg className="w-8 h-8 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{color:'rgb(var(--text-2))'}}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <p className="text-sm font-medium" style={{color:'rgb(var(--text-2))'}}>Sin transacciones</p>
+        <p className="text-xs mt-1 opacity-60" style={{color:'rgb(var(--text-2))'}}>Agrega tu primer movimiento</p>
       </div>
     )
   }
 
   return (
     <TooltipProvider>
-      <div className="overflow-x-auto rounded-lg border border-slate-700">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-slate-800 border-b border-slate-700">
-              <th className="text-left px-4 py-3 text-slate-400 font-medium">Fecha</th>
-              <th className="text-left px-4 py-3 text-slate-400 font-medium">Descripción</th>
-              <th className="text-left px-4 py-3 text-slate-400 font-medium">Categoría</th>
-              <th className="text-right px-4 py-3 text-slate-400 font-medium">Monto</th>
-              <th className="text-center px-4 py-3 text-slate-400 font-medium">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((t, i) => (
-              <tr
+      <div className="glass rounded-2xl overflow-hidden">
+        {/* Header — solo visible en desktop */}
+        <div className="hidden md:grid grid-cols-[1fr_2fr_1fr_1fr_auto] gap-4 px-5 py-3 border-b border-[rgba(var(--glass-border))]">
+          {['Fecha','Descripción','Categoría','Monto',''].map(h => (
+            <span key={h} className="text-[11px] font-semibold uppercase tracking-widest" style={{color:'rgb(var(--text-2))'}}>
+              {h}
+            </span>
+          ))}
+        </div>
+
+        <div className="divide-y divide-[rgba(var(--glass-border))]">
+          {transactions.map(t => {
+            const isIncome = t.category.type === 'income'
+            return (
+              <div
                 key={t.id}
-                className={`border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors ${
-                  i % 2 === 0 ? 'bg-slate-900' : 'bg-slate-900/50'
-                }`}
+                className="flex md:grid md:grid-cols-[1fr_2fr_1fr_1fr_auto] md:gap-4 items-center px-5 py-3.5 hover:bg-[rgba(var(--glass-border))] transition-colors group"
               >
-                <td className="px-4 py-3 text-slate-300 whitespace-nowrap">
-                  {format(new Date(t.date), 'dd MMM yyyy', { locale: es })}
-                </td>
-                <td className="px-4 py-3 text-white">
-                  <div className="flex items-center gap-2">
-                    <span>{t.description}</span>
-                    {t.justification && (
-                      <Tooltip>
-                        <TooltipTrigger
-                          className="text-yellow-400 hover:text-yellow-300"
-                          aria-label="Ver justificación"
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                        </TooltipTrigger>
-                        <TooltipContent className="bg-slate-800 border border-slate-700 text-white max-w-xs p-2">
-                          <p className="text-xs font-semibold text-yellow-400 mb-1">
-                            Justificación:
-                          </p>
-                          <p className="text-sm">{t.justification}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
+                {/* Icono + fecha (mobile: izquierda) */}
+                <div className="flex items-center gap-3 min-w-0 flex-1 md:flex-none">
+                  <div className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center"
+                    style={{background: isIncome ? 'rgba(var(--income),0.12)' : 'rgba(var(--expense),0.12)'}}>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                      style={{color: isIncome ? 'rgb(var(--income))' : 'rgb(var(--expense))'}}>
+                      <path strokeLinecap="round" strokeLinejoin="round"
+                        d={isIncome ? 'M5 10l7-7m0 0l7 7m-7-7v18' : 'M19 14l-7 7m0 0l-7-7m7 7V3'} />
+                    </svg>
                   </div>
-                </td>
-                <td className="px-4 py-3">
-                  <Badge
-                    variant="outline"
-                    className={`border-slate-600 text-xs ${
-                      t.category.type === 'income'
-                        ? 'text-emerald-400 border-emerald-700'
-                        : 'text-red-400 border-red-700'
-                    }`}
-                  >
+                  {/* Mobile: descripción + fecha apilados */}
+                  <div className="md:hidden min-w-0">
+                    <p className="text-sm font-medium truncate" style={{color:'rgb(var(--text))'}}>
+                      {t.description}
+                    </p>
+                    <p className="text-xs mt-0.5" style={{color:'rgb(var(--text-2))'}}>
+                      {t.category.name} · {format(new Date(t.date), 'd MMM', { locale: es })}
+                    </p>
+                  </div>
+                  {/* Desktop: solo fecha */}
+                  <span className="hidden md:block text-sm" style={{color:'rgb(var(--text-2))'}}>
+                    {format(new Date(t.date), 'dd MMM yyyy', { locale: es })}
+                  </span>
+                </div>
+
+                {/* Descripción — solo desktop */}
+                <div className="hidden md:flex items-center gap-2">
+                  <span className="text-sm font-medium truncate" style={{color:'rgb(var(--text))'}}>
+                    {t.description}
+                  </span>
+                  {t.justification && (
+                    <Tooltip>
+                      <TooltipTrigger className="shrink-0 text-yellow-400 hover:text-yellow-300">
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs p-3">
+                        <p className="text-xs font-semibold text-yellow-400 mb-1">Justificación</p>
+                        <p className="text-xs">{t.justification}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
+
+                {/* Categoría — solo desktop */}
+                <div className="hidden md:block">
+                  <span className="text-xs px-2.5 py-1 rounded-full font-medium"
+                    style={{
+                      background: isIncome ? 'rgba(var(--income),0.12)' : 'rgba(var(--expense),0.12)',
+                      color: isIncome ? 'rgb(var(--income))' : 'rgb(var(--expense))',
+                    }}>
                     {t.category.name}
-                  </Badge>
-                </td>
-                <td
-                  className={`px-4 py-3 text-right font-semibold whitespace-nowrap ${
-                    t.category.type === 'income' ? 'text-emerald-400' : 'text-red-400'
-                  }`}
-                >
-                  {t.category.type === 'income' ? '+' : '-'}
-                  {formatCurrency(t.amount)}
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-center gap-2">
-                    <button
-                      onClick={() => onEdit(t)}
-                      className="p-1 text-slate-400 hover:text-white transition-colors"
-                      aria-label="Editar"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => setDeleteId(t.id)}
-                      className="p-1 text-slate-400 hover:text-red-400 transition-colors"
-                      aria-label="Eliminar"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  </span>
+                </div>
+
+                {/* Monto */}
+                <p className="text-sm font-semibold font-display ml-auto md:ml-0 mr-4 md:mr-0 shrink-0"
+                  style={{color: isIncome ? 'rgb(var(--income))' : 'rgb(var(--expense))'}}>
+                  {isIncome ? '+' : '-'}{fmt(t.amount)}
+                </p>
+
+                {/* Acciones */}
+                <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => onEdit(t)}
+                    className="p-1.5 rounded-lg transition-colors hover:bg-[rgba(var(--glass-border))]"
+                    style={{color:'rgb(var(--text-2))'}}
+                    aria-label="Editar"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setDeleteId(t.id)}
+                    className="p-1.5 rounded-lg transition-colors hover:bg-red-500/10 hover:text-red-400"
+                    style={{color:'rgb(var(--text-2))'}}
+                    aria-label="Eliminar"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
-      {/* Diálogo de confirmación de eliminación */}
-      {/* base-ui Dialog: onOpenChange recibe (open, eventDetails) */}
-      <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null) }}>
-        <DialogContent className="bg-slate-800 border-slate-700 text-white">
+      <Dialog open={!!deleteId} onOpenChange={open => { if (!open) setDeleteId(null) }}>
+        <DialogContent className="glass border-[rgba(var(--glass-border))] max-w-sm">
           <DialogHeader>
-            <DialogTitle>¿Eliminar transacción?</DialogTitle>
+            <DialogTitle className="font-display font-semibold" style={{color:'rgb(var(--text))'}}>
+              ¿Eliminar transacción?
+            </DialogTitle>
           </DialogHeader>
-          <p className="text-slate-400 text-sm">Esta acción no se puede deshacer.</p>
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
+          <p className="text-sm" style={{color:'rgb(var(--text-2))'}}>Esta acción no se puede deshacer.</p>
+          <DialogFooter className="gap-2 mt-2">
+            <button
               onClick={() => setDeleteId(null)}
-              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all hover:bg-[rgba(var(--glass-border))]"
+              style={{borderColor:'rgba(var(--glass-border))',color:'rgb(var(--text-2))'}}
             >
               Cancelar
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={confirmDelete}
               disabled={deleting}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition-all active:scale-[0.97] disabled:opacity-60"
             >
               {deleting ? 'Eliminando...' : 'Eliminar'}
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
