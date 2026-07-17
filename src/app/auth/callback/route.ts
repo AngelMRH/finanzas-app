@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { seedDefaultCategories } from '@/lib/seed-categories'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
@@ -23,8 +25,24 @@ export async function GET(request: NextRequest) {
         },
       }
     )
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
+
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+
+    if (!error && data.user) {
+      // Crear perfil y categorías por defecto si es la primera vez
+      const admin = createAdminClient()
+      await admin
+        .from('User')
+        .upsert(
+          {
+            id: data.user.id,
+            email: data.user.email!,
+            name: data.user.user_metadata?.full_name ?? null,
+          },
+          { onConflict: 'id' }
+        )
+      await seedDefaultCategories(data.user.id)
+
       return NextResponse.redirect(`${origin}${next}`)
     }
   }
