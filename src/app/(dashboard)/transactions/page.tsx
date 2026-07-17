@@ -100,7 +100,7 @@ export default function TransactionsPage() {
 
       {/* Dialog */}
       <Dialog open={showForm} onOpenChange={open => { if (!open) handleCloseForm() }}>
-        <DialogContent className="glass border-[rgba(var(--glass-border))] max-w-lg">
+        <DialogContent className="glass border-[rgba(var(--glass-border))] max-w-lg overflow-y-auto max-h-[90dvh]">
           <DialogHeader>
             <DialogTitle className="font-display font-semibold" style={{color:'rgb(var(--text))'}}>
               {editingTransaction ? 'Editar' : 'Nueva transacción'}

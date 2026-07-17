@@ -29,12 +29,12 @@ export function ExpensePieChart({ topCategories }: ExpensePieChartProps) {
   return (
     <div className="glass rounded-2xl p-6 fade-up fade-up-3">
       <p className="text-sm font-semibold mb-4" style={{color:'rgb(var(--text))'}}>Top categorías</p>
-      <div className="flex items-center gap-4">
-        <div className="w-28 h-28 shrink-0">
+      <div className="flex flex-col sm:flex-row items-center gap-4">
+        <div className="w-32 h-32 sm:w-28 sm:h-28 shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie data={topCategories} dataKey="amount" cx="50%" cy="50%"
-                innerRadius={28} outerRadius={52} paddingAngle={3} strokeWidth={0}>
+                innerRadius={30} outerRadius={56} paddingAngle={3} strokeWidth={0}>
                 {topCategories.map((_, i) => (
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
@@ -52,7 +52,7 @@ export function ExpensePieChart({ topCategories }: ExpensePieChartProps) {
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex-1 space-y-2 min-w-0">
+        <div className="w-full flex-1 space-y-2 min-w-0">
           {topCategories.map((c, i) => (
             <div key={c.name} className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full shrink-0" style={{ background: COLORS[i % COLORS.length] }} />

@@ -43,9 +43,9 @@ export function TransactionFilters({
   const monthOptions = getMonthOptions()
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">
       <Select value={selectedMonth} onValueChange={val => onMonthChange(val as string)}>
-        <SelectTrigger className="w-44">
+        <SelectTrigger className="w-full sm:w-44">
           <SelectValue placeholder="Filtrar por mes" />
         </SelectTrigger>
         <SelectContent>
@@ -57,7 +57,7 @@ export function TransactionFilters({
       </Select>
 
       <Select value={selectedCategory} onValueChange={val => onCategoryChange(val as string)}>
-        <SelectTrigger className="w-44">
+        <SelectTrigger className="w-full sm:w-44">
           <SelectValue placeholder="Categoría" />
         </SelectTrigger>
         <SelectContent>
