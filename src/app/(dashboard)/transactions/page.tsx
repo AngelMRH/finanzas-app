@@ -43,8 +43,8 @@ export default function TransactionsPage() {
   useEffect(() => {
     fetch('/api/categories')
       .then(r => r.json())
-      .then(setCategories)
-      .catch(console.error)
+      .then(data => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => setCategories([]))
   }, [])
 
   useEffect(() => {
