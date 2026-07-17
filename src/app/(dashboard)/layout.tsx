@@ -4,9 +4,9 @@ export const dynamic = 'force-dynamic'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-slate-950 dark:bg-slate-950">
+    <div className="aurora flex min-h-dvh">
       <Sidebar />
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 min-w-0 pb-24 md:pb-0 pt-14 md:pt-0 overflow-x-hidden">
         {children}
       </main>
     </div>

@@ -1,66 +1,71 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-
 interface StatsCardsProps {
   balance: number
   monthlyIncome: number
   monthlyExpenses: number
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('es-MX', {
-    style: 'currency',
-    currency: 'MXN',
-  }).format(amount)
+function fmt(n: number) {
+  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(n)
 }
 
 export function StatsCards({ balance, monthlyIncome, monthlyExpenses }: StatsCardsProps) {
+  const isPositive = balance >= 0
+  const savingsRate = monthlyIncome > 0 ? Math.round((balance / monthlyIncome) * 100) : 0
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <Card className="bg-slate-800 border-slate-700">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-slate-400">Saldo Total</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className={`text-2xl font-bold ${balance >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-            {formatCurrency(balance)}
-          </p>
-          <p className="text-xs text-slate-500 mt-1">Este mes</p>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-slate-800 border-slate-700">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-slate-400">Ingresos del Mes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold text-emerald-400">{formatCurrency(monthlyIncome)}</p>
-          <p className="text-xs text-slate-500 mt-1">
-            <span className="inline-flex items-center gap-1">
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-              </svg>
-              Entradas
+    <div className="space-y-3">
+      {/* Balance principal — card grande */}
+      <div className="glass rounded-2xl p-6 fade-up fade-up-1">
+        <p className="text-xs font-medium uppercase tracking-widest mb-3" style={{color:'rgb(var(--text-2))'}}>
+          Balance del mes
+        </p>
+        <p className={`stat-number text-5xl md:text-6xl mb-4 ${isPositive ? 'text-income' : 'text-expense'}`}>
+          {fmt(balance)}
+        </p>
+        <div className="flex items-center gap-2">
+          <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+            isPositive ? 'bg-income-dim text-income' : 'bg-expense-dim text-expense'
+          }`}>
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round"
+                d={isPositive ? 'M5 10l7-7m0 0l7 7m-7-7v18' : 'M19 14l-7 7m0 0l-7-7m7 7V3'} />
+            </svg>
+            {isPositive ? 'Superávit' : 'Déficit'}
+          </div>
+          {monthlyIncome > 0 && (
+            <span className="text-xs" style={{color:'rgb(var(--text-2))'}}>
+              {savingsRate}% de tus ingresos
             </span>
-          </p>
-        </CardContent>
-      </Card>
+          )}
+        </div>
+      </div>
 
-      <Card className="bg-slate-800 border-slate-700">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-slate-400">Gastos del Mes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold text-red-400">{formatCurrency(monthlyExpenses)}</p>
-          <p className="text-xs text-slate-500 mt-1">
-            <span className="inline-flex items-center gap-1">
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+      {/* Ingresos y Gastos — 2 cards */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="glass rounded-2xl p-4 fade-up fade-up-2">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-medium" style={{color:'rgb(var(--text-2))'}}>Ingresos</p>
+            <div className="w-6 h-6 rounded-lg bg-income-dim flex items-center justify-center">
+              <svg className="w-3.5 h-3.5 text-income" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
               </svg>
-              Salidas
-            </span>
-          </p>
-        </CardContent>
-      </Card>
+            </div>
+          </div>
+          <p className="stat-number text-2xl text-income">{fmt(monthlyIncome)}</p>
+        </div>
+
+        <div className="glass rounded-2xl p-4 fade-up fade-up-3">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-medium" style={{color:'rgb(var(--text-2))'}}>Gastos</p>
+            <div className="w-6 h-6 rounded-lg bg-expense-dim flex items-center justify-center">
+              <svg className="w-3.5 h-3.5 text-expense" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </div>
+          </div>
+          <p className="stat-number text-2xl text-expense">{fmt(monthlyExpenses)}</p>
+        </div>
+      </div>
     </div>
   )
 }

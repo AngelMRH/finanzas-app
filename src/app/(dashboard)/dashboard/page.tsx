@@ -11,12 +11,13 @@ interface DashboardData {
   monthlyExpenses: number
   topCategories: Array<{ name: string; amount: number }>
   recentTransactions: Array<{
-    id: string
-    amount: number
-    description: string
-    date: string
+    id: string; amount: number; description: string; date: string
     category: { name: string; type: string }
   }>
+}
+
+function SkeletonCard({ h = 'h-32' }: { h?: string }) {
+  return <div className={`skeleton rounded-2xl ${h}`} />
 }
 
 export default function DashboardPage() {
@@ -26,51 +27,49 @@ export default function DashboardPage() {
   useEffect(() => {
     fetch('/api/dashboard')
       .then(r => r.json())
-      .then(setData)
+      .then(d => { if (!d.error) setData(d) })
       .finally(() => setLoading(false))
   }, [])
 
   const now = new Date()
-  const monthName = now.toLocaleString('es-MX', { month: 'long', year: 'numeric' })
-
-  if (loading) {
-    return (
-      <div className="p-6">
-        <div className="h-8 bg-slate-700 rounded w-48 mb-6 animate-pulse" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="h-28 bg-slate-800 rounded-lg animate-pulse" />
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  if (!data) {
-    return (
-      <div className="p-6">
-        <p className="text-red-400">Error cargando el dashboard</p>
-      </div>
-    )
-  }
+  const month = now.toLocaleString('es-MX', { month: 'long', year: 'numeric' })
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-slate-400 text-sm capitalize mt-1">{monthName}</p>
+    <div className="p-4 md:p-6 max-w-2xl mx-auto md:max-w-none">
+      <div className="mb-6 fade-up">
+        <h1 className="font-display font-bold text-2xl md:text-3xl" style={{color:'rgb(var(--text))'}}>
+          Buen día 👋
+        </h1>
+        <p className="text-sm capitalize mt-0.5" style={{color:'rgb(var(--text-2))'}}>
+          {month}
+        </p>
       </div>
 
-      <StatsCards
-        balance={data.balance}
-        monthlyIncome={data.monthlyIncome}
-        monthlyExpenses={data.monthlyExpenses}
-      />
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ExpensePieChart topCategories={data.topCategories} />
-        <RecentTransactions transactions={data.recentTransactions} />
-      </div>
+      {loading ? (
+        <div className="space-y-3">
+          <SkeletonCard h="h-44" />
+          <div className="grid grid-cols-2 gap-3">
+            <SkeletonCard h="h-24" />
+            <SkeletonCard h="h-24" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <SkeletonCard h="h-40" />
+            <SkeletonCard h="h-40" />
+          </div>
+        </div>
+      ) : !data ? (
+        <div className="glass rounded-2xl p-8 text-center">
+          <p style={{color:'rgb(var(--text-2))'}}>Error cargando datos</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <StatsCards balance={data.balance} monthlyIncome={data.monthlyIncome} monthlyExpenses={data.monthlyExpenses} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <ExpensePieChart topCategories={data.topCategories} />
+            <RecentTransactions transactions={data.recentTransactions} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
