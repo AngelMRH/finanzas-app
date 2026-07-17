@@ -200,9 +200,11 @@
 .fade-up-4          { animation-delay: 0.2s; }
 
 /* ── Income / Expense colors ── */
-.text-income   { color: rgb(var(--income)); }
-.text-expense  { color: rgb(var(--expense)); }
-.bg-income-dim { background: rgba(var(--accent-dim)); }
+.text-income    { color: rgb(var(--income)); }
+.text-expense   { color: rgb(var(--expense)); }
+.bg-income      { background-color: rgb(var(--income)); }
+.bg-expense     { background-color: rgb(var(--expense)); }
+.bg-income-dim  { background: rgba(var(--accent-dim)); }
 .bg-expense-dim { background: rgba(var(--danger-dim)); }
 
 /* ── Scrollbar ── */
