@@ -154,7 +154,9 @@
   z-index: 0;
 }
 
-.aurora > * { position: relative; z-index: 1; }
+@layer base {
+  .aurora > * { position: relative; z-index: 1; }
+}
 
 /* ── Stat number ── */
 .stat-number {
