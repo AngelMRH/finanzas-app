@@ -106,31 +106,35 @@ export default function TransactionsPage() {
 
       {/* Modal */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={handleCloseForm}
-          />
-          {/* Panel */}
-          <div className="relative glass border border-[rgba(var(--glass-border))] rounded-2xl p-4 w-full max-w-lg max-h-[90dvh] overflow-y-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-semibold text-base" style={{color:'rgb(var(--text))'}}>
-                {editingTransaction ? 'Editar transacción' : 'Nueva transacción'}
-              </h2>
-              <button
-                type="button"
-                onClick={handleCloseForm}
-                className="p-1.5 rounded-lg hover:bg-[rgba(var(--glass-border))] transition-colors"
-                style={{color:'rgb(var(--text-2))'}}
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+        <div
+          className="fixed inset-0 z-50"
+          style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+          onClick={handleCloseForm}
+        >
+          <div className="absolute inset-0 flex items-center justify-center p-4" style={{ pointerEvents: 'none' }}>
+            <div
+              className="glass border border-[rgba(var(--glass-border))] rounded-3xl p-5 w-full max-w-lg max-h-[90dvh] overflow-y-auto"
+              style={{ pointerEvents: 'auto' }}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="font-semibold text-base" style={{ color: 'rgb(var(--text))' }}>
+                  {editingTransaction ? 'Editar transacción' : 'Nueva transacción'}
+                </h2>
+                <button
+                  type="button"
+                  onClick={handleCloseForm}
+                  className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
+                  style={{ background: 'rgba(var(--glass-border))', color: 'rgb(var(--text-2))' }}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <TransactionForm categories={categories} transaction={editingTransaction} onSuccess={handleSuccess} onCancel={handleCloseForm} />
             </div>
-            <TransactionForm categories={categories} transaction={editingTransaction} onSuccess={handleSuccess} onCancel={handleCloseForm} />
           </div>
         </div>
       )}
