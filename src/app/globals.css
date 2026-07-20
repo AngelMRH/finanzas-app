@@ -205,6 +205,37 @@
 .fade-up-3          { animation-delay: 0.15s; }
 .fade-up-4          { animation-delay: 0.2s; }
 
+/* ── Float (preview cards en login) ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+.float-anim         { animation: float 6s ease-in-out infinite; }
+.float-anim-2       { animation: float 8s 1.5s ease-in-out infinite; }
+.float-anim-3       { animation: float 7s 0.8s ease-in-out infinite reverse; }
+
+/* ── Glow pulse (ícono del login) ── */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255,255,255,0.15) inset, 0 8px 32px rgba(48,209,88,0.35), 0 20px 60px rgba(10,132,255,0.15); }
+  50%      { box-shadow: 0 0 0 1px rgba(255,255,255,0.22) inset, 0 8px 44px rgba(48,209,88,0.55), 0 20px 80px rgba(10,132,255,0.28); }
+}
+.glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
+
+/* ── Spin (loading spinner) ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.animate-spin { animation: spin 0.75s linear infinite; }
+
+/* ── Card lift on hover ── */
+.card-lift {
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
+}
+.card-lift:hover {
+  transform: translateY(-3px) scale(1.005);
+  box-shadow: var(--glass-shadow), 0 16px 40px rgba(0,0,0,0.14), inset 0 0.5px 0 rgba(255,255,255,0.16);
+}
+
 /* ── Income / Expense colors ── */
 .text-income    { color: rgb(var(--income)); }
 .text-expense   { color: rgb(var(--expense)); }
