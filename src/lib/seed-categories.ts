@@ -16,6 +16,6 @@ const DEFAULTS = [
 
 export async function seedDefaultCategories(userId: string, supabase: SupabaseClient) {
   await supabase.from('Category').insert(
-    DEFAULTS.map(c => ({ ...c, userId }))
+    DEFAULTS.map(c => ({ id: crypto.randomUUID(), ...c, userId }))
   )
 }

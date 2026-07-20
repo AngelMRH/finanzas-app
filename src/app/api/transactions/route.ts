@@ -101,6 +101,7 @@ export async function POST(request: NextRequest) {
     const { data: transaction, error: insertError } = await supabase
       .from('Transaction')
       .insert({
+        id: crypto.randomUUID(),
         amount: Number(amount),
         description: description.trim(),
         date: date ? new Date(date).toISOString() : new Date().toISOString(),
