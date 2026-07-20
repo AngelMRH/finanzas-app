@@ -10,6 +10,7 @@ import { Category, Transaction } from '@/lib/types'
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>()
@@ -35,8 +36,8 @@ export default function TransactionsPage() {
   useEffect(() => {
     fetch('/api/categories')
       .then(r => r.json())
-      .then(d => setCategories(Array.isArray(d) ? d : []))
-      .catch(() => setCategories([]))
+      .then(d => { setCategories(Array.isArray(d) ? d : []); setCategoriesLoading(false) })
+      .catch(() => { setCategories([]); setCategoriesLoading(false) })
   }, [])
 
   useEffect(() => { fetchTransactions() }, [fetchTransactions])
@@ -133,7 +134,7 @@ export default function TransactionsPage() {
                   </svg>
                 </button>
               </div>
-              <TransactionForm categories={categories} transaction={editingTransaction} onSuccess={handleSuccess} onCancel={handleCloseForm} />
+              <TransactionForm categories={categories} categoriesLoading={categoriesLoading} transaction={editingTransaction} onSuccess={handleSuccess} onCancel={handleCloseForm} />
             </div>
           </div>
         </div>

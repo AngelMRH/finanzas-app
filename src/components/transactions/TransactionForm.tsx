@@ -7,6 +7,7 @@ import { Category, Transaction } from '@/lib/types'
 
 interface TransactionFormProps {
   categories: Category[]
+  categoriesLoading?: boolean
   transaction?: Transaction
   onSuccess: (transaction: Transaction) => void
   onCancel: () => void
@@ -159,7 +160,7 @@ function CategoryChip({
 // ---------------------------------------------------------------------------
 // Main form
 // ---------------------------------------------------------------------------
-export function TransactionForm({ categories, transaction, onSuccess, onCancel }: TransactionFormProps) {
+export function TransactionForm({ categories, categoriesLoading, transaction, onSuccess, onCancel }: TransactionFormProps) {
   const [amount, setAmount] = useState(transaction ? String(transaction.amount) : '')
   const [description, setDescription] = useState(transaction?.description ?? '')
   const [date, setDate] = useState(
@@ -249,42 +250,62 @@ export function TransactionForm({ categories, transaction, onSuccess, onCancel }
 
       {/* Category chips */}
       <div className="space-y-2.5">
-        <Label className="text-xs font-medium" style={labelStyle}>Categoría</Label>
+        <Label className="text-xs font-medium" style={labelStyle}>
+          Categoría — elige una para definir si es ingreso o gasto
+        </Label>
 
-        {incomeCategories.length > 0 && (
-          <div className="space-y-1.5">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">
-              Ingresos
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {incomeCategories.map(c => (
-                <CategoryChip
-                  key={c.id}
-                  category={c}
-                  selected={categoryId === c.id}
-                  onClick={() => setCategoryId(c.id)}
-                />
-              ))}
-            </div>
+        {categoriesLoading ? (
+          <div className="flex flex-wrap gap-2 py-1">
+            {[80, 96, 72, 88, 80, 104].map((w, i) => (
+              <div key={i} className="skeleton h-10 rounded-xl" style={{ width: w }} />
+            ))}
           </div>
-        )}
+        ) : categories.length === 0 ? (
+          <div
+            className="rounded-2xl p-4 text-sm text-center space-y-1"
+            style={{ background: 'rgba(var(--danger-dim))', color: 'rgb(var(--danger))' }}
+          >
+            <p className="font-semibold">No se cargaron las categorías</p>
+            <p className="text-xs opacity-80">Cierra el formulario, recarga la página e intenta de nuevo.</p>
+          </div>
+        ) : (
+          <>
+            {incomeCategories.length > 0 && (
+              <div className="space-y-1.5">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+                  ↑ Ingresos
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {incomeCategories.map(c => (
+                    <CategoryChip
+                      key={c.id}
+                      category={c}
+                      selected={categoryId === c.id}
+                      onClick={() => setCategoryId(c.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
-        {expenseCategories.length > 0 && (
-          <div className="space-y-1.5">
-            <p className="text-[10px] font-bold uppercase tracking-widest" style={{color:'rgb(var(--expense))'}}>
-              Gastos
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {expenseCategories.map(c => (
-                <CategoryChip
-                  key={c.id}
-                  category={c}
-                  selected={categoryId === c.id}
-                  onClick={() => setCategoryId(c.id)}
-                />
-              ))}
-            </div>
-          </div>
+            {expenseCategories.length > 0 && (
+              <div className="space-y-1.5">
+                <p className="text-[10px] font-bold uppercase tracking-widest" style={{color:'rgb(var(--expense))'}}>
+                  ↓ Gastos
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {expenseCategories.map(c => (
+                    <CategoryChip
+                      key={c.id}
+                      category={c}
+                      selected={categoryId === c.id}
+                      onClick={() => setCategoryId(c.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

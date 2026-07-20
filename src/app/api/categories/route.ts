@@ -23,7 +23,7 @@ export async function GET(_request: NextRequest) {
     }
 
     if (count === 0) {
-      await seedDefaultCategories(user.id)
+      await seedDefaultCategories(user.id, supabase)
 
       const { data: seeded, error: seedError } = await supabase
         .from('Category')

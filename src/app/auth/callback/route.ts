@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
           },
           { onConflict: 'id' }
         )
-      await seedDefaultCategories(data.user.id)
+      await seedDefaultCategories(data.user.id, admin)
 
       return NextResponse.redirect(`${origin}${next}`)
     }

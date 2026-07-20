@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Error creando usuario' }, { status: 500 })
     }
 
-    await seedDefaultCategories(userId)
+    await seedDefaultCategories(userId, supabase)
 
     return NextResponse.json({ success: true }, { status: 201 })
   } catch (error) {
