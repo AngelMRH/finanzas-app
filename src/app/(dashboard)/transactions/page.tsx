@@ -33,12 +33,15 @@ export default function TransactionsPage() {
     setLoading(false)
   }, [selectedMonth, selectedCategory])
 
-  useEffect(() => {
+  const fetchCategories = useCallback(() => {
+    setCategoriesLoading(true)
     fetch('/api/categories')
       .then(r => r.json())
       .then(d => { setCategories(Array.isArray(d) ? d : []); setCategoriesLoading(false) })
       .catch(() => { setCategories([]); setCategoriesLoading(false) })
   }, [])
+
+  useEffect(() => { fetchCategories() }, [fetchCategories])
 
   useEffect(() => { fetchTransactions() }, [fetchTransactions])
 
@@ -134,7 +137,7 @@ export default function TransactionsPage() {
                   </svg>
                 </button>
               </div>
-              <TransactionForm categories={categories} categoriesLoading={categoriesLoading} transaction={editingTransaction} onSuccess={handleSuccess} onCancel={handleCloseForm} />
+              <TransactionForm categories={categories} categoriesLoading={categoriesLoading} onRetryCategories={fetchCategories} transaction={editingTransaction} onSuccess={handleSuccess} onCancel={handleCloseForm} />
             </div>
           </div>
         </div>

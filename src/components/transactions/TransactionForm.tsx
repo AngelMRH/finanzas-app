@@ -8,6 +8,7 @@ import { Category, Transaction } from '@/lib/types'
 interface TransactionFormProps {
   categories: Category[]
   categoriesLoading?: boolean
+  onRetryCategories?: () => void
   transaction?: Transaction
   onSuccess: (transaction: Transaction) => void
   onCancel: () => void
@@ -160,7 +161,7 @@ function CategoryChip({
 // ---------------------------------------------------------------------------
 // Main form
 // ---------------------------------------------------------------------------
-export function TransactionForm({ categories, categoriesLoading, transaction, onSuccess, onCancel }: TransactionFormProps) {
+export function TransactionForm({ categories, categoriesLoading, onRetryCategories, transaction, onSuccess, onCancel }: TransactionFormProps) {
   const [amount, setAmount] = useState(transaction ? String(transaction.amount) : '')
   const [description, setDescription] = useState(transaction?.description ?? '')
   const [date, setDate] = useState(
@@ -262,11 +263,22 @@ export function TransactionForm({ categories, categoriesLoading, transaction, on
           </div>
         ) : categories.length === 0 ? (
           <div
-            className="rounded-2xl p-4 text-sm text-center space-y-1"
+            className="rounded-2xl p-4 text-sm text-center space-y-3"
             style={{ background: 'rgba(var(--danger-dim))', color: 'rgb(var(--danger))' }}
           >
             <p className="font-semibold">No se cargaron las categorías</p>
-            <p className="text-xs opacity-80">Cierra el formulario, recarga la página e intenta de nuevo.</p>
+            <p className="text-xs opacity-80">
+              Falta la política INSERT en Supabase. Ejecuta el SQL en el dashboard de Supabase y luego toca "Reintentar".
+            </p>
+            {onRetryCategories && (
+              <button
+                type="button"
+                onClick={onRetryCategories}
+                className="px-4 py-1.5 rounded-xl text-xs font-bold border border-current opacity-80 hover:opacity-100 transition-opacity"
+              >
+                Reintentar
+              </button>
+            )}
           </div>
         ) : (
           <>
