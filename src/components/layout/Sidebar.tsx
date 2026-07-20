@@ -32,7 +32,7 @@ const navItems = [
     icon: (active: boolean) => (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={active ? 0 : 1.8}>
         <path strokeLinecap="round" strokeLinejoin="round"
-          d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+          d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
       </svg>
     ),
   },
@@ -66,54 +66,69 @@ export function Sidebar() {
       {/* ── Desktop Sidebar ── */}
       <aside className="hidden md:flex flex-col w-60 min-h-screen glass border-r border-[rgba(var(--glass-border))] shrink-0">
         {/* Logo */}
-        <div className="p-6 pb-8">
+        <div className="p-6 pb-6">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500 accent-glow flex items-center justify-center shrink-0">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <div
+              className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+              style={{
+                background: 'linear-gradient(135deg, rgba(48,209,88,1) 0%, rgba(10,132,255,0.8) 100%)',
+                boxShadow: '0 4px 12px rgba(48,209,88,0.3)',
+              }}
+            >
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                 <path strokeLinecap="round" strokeLinejoin="round"
                   d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div>
-              <p className="font-display font-700 text-sm" style={{color: 'rgb(var(--text))'}}>FinanzasApp</p>
-              <p className="text-xs" style={{color: 'rgb(var(--text-2))'}}>Personal</p>
+              <p className="font-bold text-sm tracking-tight" style={{ color: 'rgb(var(--text))' }}>Finanzas</p>
+              <p className="text-xs" style={{ color: 'rgb(var(--text-2))' }}>Personal</p>
             </div>
           </div>
         </div>
 
+        <div className="mx-4 mb-4 h-px" style={{ background: 'rgba(var(--glass-border))' }} />
+
         {/* Nav */}
-        <nav className="flex-1 px-3 space-y-1">
+        <nav className="flex-1 px-3 space-y-0.5">
           {navItems.map(item => {
             const active = isActive(item.href)
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  active
-                    ? 'bg-emerald-500/15 text-emerald-400'
-                    : 'hover:bg-[rgba(var(--glass-border))]'
-                }`}
-                style={{ color: active ? undefined : 'rgb(var(--text-2))' }}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-all duration-150 relative group"
+                style={{
+                  background: active ? 'rgba(48,209,88,0.12)' : undefined,
+                  color: active ? 'rgb(var(--income))' : 'rgb(var(--text-2))',
+                }}
               >
                 {item.icon(active)}
                 {item.label}
-                {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                {active && (
+                  <div
+                    className="ml-auto w-1.5 h-1.5 rounded-full"
+                    style={{ background: 'rgb(var(--income))' }}
+                  />
+                )}
               </Link>
             )
           })}
         </nav>
 
         {/* Footer */}
-        <div className="p-3 space-y-1 border-t border-[rgba(var(--glass-border))]">
-          <div className="flex items-center justify-between px-3 py-2">
-            <span className="text-xs" style={{color: 'rgb(var(--text-2))'}}>Tema</span>
+        <div className="p-3 space-y-0.5">
+          <div className="mx-1 mb-3 h-px" style={{ background: 'rgba(var(--glass-border))' }} />
+          <div className="flex items-center justify-between px-3 py-2 rounded-2xl">
+            <span className="text-xs font-medium" style={{ color: 'rgb(var(--text-2))' }}>Apariencia</span>
             <ThemeToggle />
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-red-500/10 hover:text-red-400"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-2xl text-sm font-medium transition-all hover:bg-red-500/10"
             style={{ color: 'rgb(var(--text-2))' }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'rgb(255,69,58)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgb(var(--text-2))')}
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
               <path strokeLinecap="round" strokeLinejoin="round"
@@ -124,50 +139,67 @@ export function Sidebar() {
         </div>
       </aside>
 
-      {/* ── Mobile Bottom Nav ── */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 glass border-t border-[rgba(var(--glass-border))] pb-safe">
-        <div className="flex items-center justify-around px-4 py-2">
-          {navItems.map(item => {
-            const active = isActive(item.href)
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all ${
-                  active ? 'text-emerald-400' : ''
-                }`}
-                style={{ color: active ? undefined : 'rgb(var(--text-2))' }}
-              >
-                {item.icon(active)}
-                <span className="text-[10px] font-medium">{item.label}</span>
-              </Link>
-            )
-          })}
-          <button
-            onClick={handleLogout}
-            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all"
-            style={{ color: 'rgb(var(--text-2))' }}
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-              <path strokeLinecap="round" strokeLinejoin="round"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <span className="text-[10px] font-medium">Salir</span>
-          </button>
+      {/* ── Mobile Bottom Tab Bar ── */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 pb-safe" style={{ background: 'none' }}>
+        <div
+          className="mx-3 mb-3 rounded-3xl glass-heavy px-2 py-1"
+          style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.4), inset 0 0.5px 0 rgba(255,255,255,0.15)' }}
+        >
+          <div className="flex items-center justify-around">
+            {navItems.map(item => {
+              const active = isActive(item.href)
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-2xl transition-all relative"
+                  style={{ color: active ? 'rgb(var(--income))' : 'rgb(var(--text-2))' }}
+                >
+                  {active && (
+                    <div
+                      className="absolute inset-0 rounded-2xl"
+                      style={{ background: 'rgba(var(--income),0.10)' }}
+                    />
+                  )}
+                  <div className="relative">{item.icon(active)}</div>
+                  <span className="text-[10px] font-semibold relative" style={{ letterSpacing: '-0.01em' }}>
+                    {item.label}
+                  </span>
+                </Link>
+              )
+            })}
+            <button
+              onClick={handleLogout}
+              className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-2xl transition-all"
+              style={{ color: 'rgb(var(--text-2))' }}
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span className="text-[10px] font-semibold">Salir</span>
+            </button>
+          </div>
         </div>
       </nav>
 
       {/* ── Mobile Header ── */}
-      <header className="md:hidden fixed top-0 inset-x-0 z-40 glass border-b border-[rgba(var(--glass-border))] pt-safe">
+      <header
+        className="md:hidden fixed top-0 inset-x-0 z-40 pt-safe"
+        style={{ background: 'rgba(var(--glass-bg))', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)', borderBottom: '1px solid rgba(var(--glass-border))' }}
+      >
         <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <div className="flex items-center gap-2.5">
+            <div
+              className="w-7 h-7 rounded-xl flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, rgba(48,209,88,1) 0%, rgba(10,132,255,0.8) 100%)' }}
+            >
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                 <path strokeLinecap="round" strokeLinejoin="round"
                   d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <span className="font-display font-semibold text-sm" style={{color: 'rgb(var(--text))'}}>FinanzasApp</span>
+            <span className="font-bold text-sm tracking-tight" style={{ color: 'rgb(var(--text))' }}>Finanzas</span>
           </div>
           <ThemeToggle />
         </div>

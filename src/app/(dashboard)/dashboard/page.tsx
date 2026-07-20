@@ -16,10 +16,6 @@ interface DashboardData {
   }>
 }
 
-function SkeletonCard({ h = 'h-32' }: { h?: string }) {
-  return <div className={`skeleton rounded-2xl ${h}`} />
-}
-
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -32,38 +28,52 @@ export default function DashboardPage() {
   }, [])
 
   const now = new Date()
-  const month = now.toLocaleString('es-MX', { month: 'long', year: 'numeric' })
+  const monthLabel = now.toLocaleString('es-MX', { month: 'long', year: 'numeric' })
 
   return (
     <div className="p-4 md:p-6 max-w-2xl mx-auto md:max-w-none">
+
+      {/* Header */}
       <div className="mb-6 fade-up">
-        <h1 className="font-display font-bold text-2xl md:text-3xl" style={{color:'rgb(var(--text))'}}>
-          Buen día 👋
+        <h1
+          className="font-bold text-3xl md:text-4xl capitalize tracking-tight"
+          style={{ color: 'rgb(var(--text))', letterSpacing: '-0.02em' }}
+        >
+          {monthLabel}
         </h1>
-        <p className="text-sm capitalize mt-0.5" style={{color:'rgb(var(--text-2))'}}>
-          {month}
+        <p className="text-sm mt-1 font-medium" style={{ color: 'rgb(var(--text-2))' }}>
+          Resumen financiero
         </p>
       </div>
 
       {loading ? (
         <div className="space-y-3">
-          <SkeletonCard h="h-44" />
+          {/* Balance skeleton */}
+          <div className="skeleton rounded-3xl h-52" />
+          {/* Income/expense skeleton */}
           <div className="grid grid-cols-2 gap-3">
-            <SkeletonCard h="h-24" />
-            <SkeletonCard h="h-24" />
+            <div className="skeleton rounded-3xl h-28" />
+            <div className="skeleton rounded-3xl h-28" />
           </div>
+          {/* Chart + list skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <SkeletonCard h="h-40" />
-            <SkeletonCard h="h-40" />
+            <div className="skeleton rounded-3xl h-48" />
+            <div className="skeleton rounded-3xl h-48" />
           </div>
         </div>
       ) : !data ? (
-        <div className="glass rounded-2xl p-8 text-center">
-          <p style={{color:'rgb(var(--text-2))'}}>Error cargando datos</p>
+        <div className="glass rounded-3xl p-10 text-center">
+          <p className="font-medium" style={{ color: 'rgb(var(--text-2))' }}>
+            Error cargando datos. Recarga la página.
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
-          <StatsCards balance={data.balance} monthlyIncome={data.monthlyIncome} monthlyExpenses={data.monthlyExpenses} />
+          <StatsCards
+            balance={data.balance}
+            monthlyIncome={data.monthlyIncome}
+            monthlyExpenses={data.monthlyExpenses}
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <ExpensePieChart topCategories={data.topCategories} />
             <RecentTransactions transactions={data.recentTransactions} />
