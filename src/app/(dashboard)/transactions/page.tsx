@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { TransactionForm } from '@/components/transactions/TransactionForm'
 import { TransactionsTable } from '@/components/transactions/TransactionsTable'
 import { TransactionFilters } from '@/components/transactions/TransactionFilters'
@@ -51,6 +50,13 @@ export default function TransactionsPage() {
 
   function handleCloseForm() { setShowForm(false); setEditingTransaction(undefined) }
 
+  useEffect(() => {
+    if (!showForm) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') handleCloseForm() }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [showForm])
+
   return (
     <div className="p-4 md:p-6 max-w-2xl mx-auto md:max-w-none">
       {/* Header */}
@@ -98,17 +104,36 @@ export default function TransactionsPage() {
         )}
       </div>
 
-      {/* Dialog */}
-      <Dialog open={showForm} onOpenChange={open => { if (!open) handleCloseForm() }}>
-        <DialogContent className="glass border-[rgba(var(--glass-border))] max-w-lg overflow-y-auto max-h-[90dvh]">
-          <DialogHeader>
-            <DialogTitle className="font-display font-semibold" style={{color:'rgb(var(--text))'}}>
-              {editingTransaction ? 'Editar' : 'Nueva transacción'}
-            </DialogTitle>
-          </DialogHeader>
-          <TransactionForm categories={categories} transaction={editingTransaction} onSuccess={handleSuccess} onCancel={handleCloseForm} />
-        </DialogContent>
-      </Dialog>
+      {/* Modal */}
+      {showForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={handleCloseForm}
+          />
+          {/* Panel */}
+          <div className="relative glass border border-[rgba(var(--glass-border))] rounded-2xl p-4 w-full max-w-lg max-h-[90dvh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display font-semibold text-base" style={{color:'rgb(var(--text))'}}>
+                {editingTransaction ? 'Editar transacción' : 'Nueva transacción'}
+              </h2>
+              <button
+                type="button"
+                onClick={handleCloseForm}
+                className="p-1.5 rounded-lg hover:bg-[rgba(var(--glass-border))] transition-colors"
+                style={{color:'rgb(var(--text-2))'}}
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <TransactionForm categories={categories} transaction={editingTransaction} onSuccess={handleSuccess} onCancel={handleCloseForm} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
