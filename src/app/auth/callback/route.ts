@@ -41,7 +41,14 @@ export async function GET(request: NextRequest) {
           },
           { onConflict: 'id' }
         )
-      await seedDefaultCategories(data.user.id, admin)
+      const { count } = await admin
+        .from('Category')
+        .select('*', { count: 'exact', head: true })
+        .eq('userId', data.user.id)
+
+      if (count === 0) {
+        await seedDefaultCategories(data.user.id, admin)
+      }
 
       return NextResponse.redirect(`${origin}${next}`)
     }

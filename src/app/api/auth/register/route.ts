@@ -22,7 +22,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Error creando usuario' }, { status: 500 })
     }
 
-    await seedDefaultCategories(userId, supabase)
+    const { count } = await supabase
+      .from('Category')
+      .select('*', { count: 'exact', head: true })
+      .eq('userId', userId)
+
+    if (count === 0) {
+      await seedDefaultCategories(userId, supabase)
+    }
 
     return NextResponse.json({ success: true }, { status: 201 })
   } catch (error) {
