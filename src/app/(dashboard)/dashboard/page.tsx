@@ -9,6 +9,7 @@ interface DashboardData {
   balance: number
   monthlyIncome: number
   monthlyExpenses: number
+  monthlyBudget: number | null
   topCategories: Array<{ name: string; amount: number }>
   recentTransactions: Array<{
     id: string; amount: number; description: string; date: string
@@ -73,6 +74,7 @@ export default function DashboardPage() {
             balance={data.balance}
             monthlyIncome={data.monthlyIncome}
             monthlyExpenses={data.monthlyExpenses}
+            monthlyBudget={data.monthlyBudget}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <ExpensePieChart topCategories={data.topCategories} />

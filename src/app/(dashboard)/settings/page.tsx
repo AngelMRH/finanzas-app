@@ -9,6 +9,9 @@ export default function SettingsPage() {
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const [monthlyBudget, setMonthlyBudget] = useState('')
+  const [budgetSaving, setBudgetSaving] = useState(false)
+  const [budgetSaved, setBudgetSaved] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -18,8 +21,24 @@ export default function SettingsPage() {
         setName(data.user.user_metadata?.full_name ?? '')
       }
       setLoading(false)
+      // Cargar presupuesto
+      fetch('/api/settings')
+        .then(r => r.json())
+        .then(d => { if (d.monthlyBudget) setMonthlyBudget(d.monthlyBudget.toString()) })
     })
   }, [])
+
+  async function handleSaveBudget() {
+    setBudgetSaving(true)
+    await fetch('/api/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ monthlyBudget: monthlyBudget ? Number(monthlyBudget) : null }),
+    })
+    setBudgetSaving(false)
+    setBudgetSaved(true)
+    setTimeout(() => setBudgetSaved(false), 2000)
+  }
 
   async function handleLogout() {
     const supabase = createClient()
@@ -82,8 +101,58 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      {/* Presupuesto mensual */}
+      <div className="glass rounded-2xl p-5 mb-4 fade-up fade-up-2">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+            style={{ background: 'rgba(var(--income),0.12)' }}>
+            <svg className="w-5 h-5 text-income" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p className="font-semibold text-sm" style={{color:'rgb(var(--text))'}}>Presupuesto mensual</p>
+            <p className="text-xs mt-0.5" style={{color:'rgb(var(--text-2))'}}>Tu sueldo o ingreso fijo mensual</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <div className="flex-1 relative">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold" style={{color:'rgb(var(--text-2))'}}>$</span>
+            <input
+              type="number"
+              value={monthlyBudget}
+              onChange={e => setMonthlyBudget(e.target.value)}
+              placeholder="10,000"
+              className="w-full pl-8 pr-3.5 py-2.5 rounded-xl text-sm outline-none transition-all"
+              style={{
+                background: 'rgba(var(--glass-border))',
+                color: 'rgb(var(--text))',
+                border: '1px solid transparent',
+              }}
+              onFocus={e => (e.target.style.borderColor = 'rgba(var(--income),0.5)')}
+              onBlur={e => (e.target.style.borderColor = 'transparent')}
+            />
+          </div>
+          <button
+            onClick={handleSaveBudget}
+            disabled={budgetSaving}
+            className="px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-[0.97] disabled:opacity-60"
+            style={{
+              background: budgetSaved ? 'rgba(var(--income),0.15)' : 'rgba(var(--income),1)',
+              color: budgetSaved ? 'rgb(var(--income))' : 'white',
+            }}
+          >
+            {budgetSaved ? '✓ Guardado' : budgetSaving ? '...' : 'Guardar'}
+          </button>
+        </div>
+        <p className="text-xs mt-2" style={{color:'rgb(var(--text-2))'}}>
+          Aparece en tu dashboard para saber cuánto te queda del mes
+        </p>
+      </div>
+
       {/* Cerrar sesión */}
-      <div className="glass rounded-2xl p-4 fade-up fade-up-2">
+      <div className="glass rounded-2xl p-4 fade-up fade-up-3">
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-red-500/10 text-red-400"

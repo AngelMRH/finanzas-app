@@ -14,3 +14,16 @@ export interface Transaction {
   categoryId: string
   category: Category
 }
+
+export interface CreditCard {
+  id: string
+  name: string
+  bank: string
+  creditLimit: number
+  balance: number
+  apr: number
+  closingDay: number
+  dueDay: number
+  color: string
+  createdAt: string
+}

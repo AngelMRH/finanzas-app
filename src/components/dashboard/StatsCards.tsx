@@ -2,6 +2,7 @@ interface StatsCardsProps {
   balance: number
   monthlyIncome: number
   monthlyExpenses: number
+  monthlyBudget?: number | null
 }
 
 function fmt(n: number) {
@@ -12,9 +13,13 @@ function fmtFull(n: number) {
   return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(n)
 }
 
-export function StatsCards({ balance, monthlyIncome, monthlyExpenses }: StatsCardsProps) {
+export function StatsCards({ balance, monthlyIncome, monthlyExpenses, monthlyBudget }: StatsCardsProps) {
   const isPositive = balance >= 0
   const savingsRate = monthlyIncome > 0 ? Math.max(0, Math.min(100, Math.round((balance / monthlyIncome) * 100))) : 0
+  const budgetUsed = monthlyBudget && monthlyBudget > 0 ? monthlyExpenses : null
+  const budgetPct = budgetUsed !== null && monthlyBudget ? Math.min(100, (budgetUsed / monthlyBudget) * 100) : null
+  const budgetRemaining = monthlyBudget ? monthlyBudget - monthlyExpenses : null
+  const budgetColor = budgetPct !== null ? (budgetPct < 70 ? 'rgb(var(--income))' : budgetPct < 90 ? 'rgb(var(--apple-blue))' : 'rgb(var(--expense))') : ''
 
   return (
     <div className="space-y-3">
@@ -122,6 +127,44 @@ export function StatsCards({ balance, monthlyIncome, monthlyExpenses }: StatsCar
           <p className="stat-number text-xl text-expense">{fmt(monthlyExpenses)}</p>
         </div>
       </div>
+
+      {/* Budget card */}
+      {monthlyBudget && budgetPct !== null && budgetRemaining !== null && (
+        <div className="glass rounded-3xl p-5 fade-up fade-up-4">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgb(var(--text-2))' }}>
+                Presupuesto del mes
+              </p>
+              <p className="text-sm font-semibold mt-0.5" style={{ color: 'rgb(var(--text))' }}>
+                {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(monthlyBudget)} total
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] font-medium" style={{ color: 'rgb(var(--text-2))' }}>
+                {budgetRemaining >= 0 ? 'Disponible' : 'Excedido'}
+              </p>
+              <p className="text-xl font-bold stat-number" style={{ color: budgetColor }}>
+                {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(Math.abs(budgetRemaining))}
+              </p>
+            </div>
+          </div>
+          <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(var(--glass-border))' }}>
+            <div
+              className="h-full rounded-full transition-all duration-700"
+              style={{ width: `${budgetPct}%`, background: budgetColor }}
+            />
+          </div>
+          <div className="flex justify-between mt-1.5">
+            <span className="text-[10px]" style={{ color: 'rgb(var(--text-2))' }}>
+              Gastado: {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(monthlyExpenses)} ({budgetPct.toFixed(0)}%)
+            </span>
+            <span className="text-[10px]" style={{ color: budgetColor }}>
+              {budgetRemaining >= 0 ? `Quedan ${budgetPct.toFixed(0) === '100' ? '0%' : (100 - budgetPct).toFixed(0) + '%'}` : 'Presupuesto excedido'}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -58,10 +58,17 @@ export async function GET(_request: NextRequest) {
       .order('date', { ascending: false })
       .limit(5)
 
+    const { data: userRow } = await supabase
+      .from('User')
+      .select('monthlyBudget')
+      .eq('id', user.id)
+      .single()
+
     return NextResponse.json({
       balance,
       monthlyIncome,
       monthlyExpenses,
+      monthlyBudget: userRow?.monthlyBudget ?? null,
       topCategories,
       recentTransactions: (recentTx ?? []).map((t: any) => ({
         id: t.id,
